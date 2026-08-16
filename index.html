@@ -460,9 +460,9 @@ TASKS.forEach(t => {
     localStorage.setItem('pc-setup-done', JSON.stringify(saved));
     updateProgress();
   });
-  // 整行点击也切换
+  // 整行点击也切换（但排除点击 checkbox 本身，避免双重触发）
   t.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'A') { cb.click(); }
+    if (e.target.tagName !== 'A' && e.target.tagName !== 'INPUT') { cb.click(); }
   });
 });
 function resetAll() {
