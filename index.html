@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>装机优化工具 · 9800X3D + RTX 5080 全套指南</title>
+<style>
+  :root {
+    --ink: #1a2332;
+    --blue: #0b5fa5;
+    --blue-soft: #e8f1fa;
+    --amber: #b7791f;
+    --amber-soft: #fdf3e3;
+    --green: #1a7f4b;
+    --green-soft: #e6f4ec;
+    --red: #b02a2a;
+    --red-soft: #fbeaea;
+    --gray: #5b6573;
+    --line: #e3e8ef;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    color: var(--ink);
+    background: #f5f7fa;
+    line-height: 1.7;
+  }
+  .topbar {
+    background: linear-gradient(135deg, #0b5fa5, #083b6e);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .topbar .brand { font-weight: 700; font-size: 16px; }
+  .topbar .brand small { opacity: .7; font-weight: 400; margin-left: 8px; font-size: 12px; }
+  .progress-wrap {
+    background: rgba(255,255,255,.15);
+    border-radius: 999px;
+    height: 22px;
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+  .progress-bar {
+    background: #4ade80;
+    height: 8px;
+    border-radius: 999px;
+    transition: width .4s;
+    margin-right: 8px;
+    flex: 1;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 20px 14px 60px; }
+  nav.tabs {
+    display: flex;
+    gap: 8px;
+    margin: 18px 0;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    background: #f5f7fa;
+    padding: 8px 0;
+    z-index: 10;
+  }
+  nav.tabs button {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  nav.tabs button.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(20,40,80,.07);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .card.active { display: block; }
+  h2 { font-size: 18px; margin-bottom: 14px; padding-left: 10px; border-left: 4px solid var(--blue); }
+  h3 { font-size: 15px; margin: 16px 0 8px; }
+  p { font-size: 14px; margin-bottom: 10px; color: #2c3747; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0 14px; }
+  th { background: var(--blue-soft); color: var(--blue); text-align: left; font-weight: 600; padding: 8px 10px; border: 1px solid var(--line); }
+  td { padding: 8px 10px; border: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: #fafbfd; }
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .task:hover { background: var(--blue-soft); }
+  .task input[type=checkbox] { margin-top: 4px; width: 16px; height: 16px; accent-color: var(--blue); flex-shrink: 0; }
+  .task .t-title { font-weight: 600; font-size: 14px; }
+  .task .t-desc { font-size: 13px; color: var(--gray); margin-top: 2px; }
+  .task .t-gain { font-size: 12px; margin-top: 4px; }
+  .task.done { opacity: .65; }
+  .task.done .t-title { text-decoration: line-through; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 1px 8px; border-radius: 999px; margin-left: 6px;
+  }
+  .tag.hot { background: var(--red-soft); color: var(--red); }
+  .tag.gain { background: var(--green-soft); color: var(--green); }
+  .tag.warn { background: var(--amber-soft); color: var(--amber); }
+  .callout { border-radius: 8px; padding: 12px 16px; font-size: 14px; margin: 12px 0; }
+  .callout.blue { background: var(--blue-soft); border-left: 4px solid var(--blue); }
+  .callout.green { background: var(--green-soft); border-left: 4px solid var(--green); }
+  .callout.amber { background: var(--amber-soft); border-left: 4px solid var(--amber); }
+  .callout.red { background: var(--red-soft); border-left: 4px solid var(--red); }
+  .callout b { display: block; margin-bottom: 4px; }
+  ol, ul { padding-left: 22px; font-size: 14px; margin-bottom: 10px; }
+  li { margin-bottom: 6px; }
+  code { background: #eef2f7; padding: 1px 6px; border-radius: 4px; font-size: 13px; font-family: "SF Mono", Consolas, monospace; }
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+  .tool {
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+    text-decoration: none; color: var(--ink); background: #fff;
+    transition: all .2s;
+  }
+  .tool:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(11,95,165,.15); transform: translateY(-1px); }
+  .tool .tool-name { font-weight: 700; font-size: 14px; color: var(--blue); }
+  .tool .tool-desc { font-size: 12px; color: var(--gray); margin-top: 4px; }
+  .tool .tool-cat { font-size: 11px; color: var(--amber); font-weight: 600; }
+  .reset-btn {
+    background: var(--red-soft); color: var(--red); border: 1px solid var(--red);
+    padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;
+    margin-top: 10px;
+  }
+  .footer { text-align: center; font-size: 12px; color: var(--gray); padding: 20px 0 30px; }
+  @media (max-width: 600px) {
+    .topbar { padding: 12px 14px; }
+    .card { padding: 16px; }
+    table { font-size: 12px; }
+    th, td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">🛠️ 装机优化工具<small>9800X3D + RTX 5080 全套指南</small></div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    <span id="progressText">0%</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="tabs">
+    <button class="active" data-tab="overview">总览</button>
+    <button data-tab="bios">BIOS 设置</button>
+    <button data-tab="win11">Win11 优化</button>
+    <button data-tab="display">显示器</button>
+    <button data-tab="tools">常用工具</button>
+    <button data-tab="memo">备忘录</button>
+  </nav>
+
+  <!-- 总览 -->
+  <div class="card active" id="tab-overview">
+    <h2>配置总览</h2>
+    <table>
+      <tr><th style="width:22%">配件</th><th style="width:48%">型号</th><th>购入价</th></tr>
+      <tr><td>CPU+主板套装</td><td>微星 MPG X870E 暗黑 WIFI + AMD R9-9800X3D</td><td>¥5282.10</td></tr>
+      <tr><td>显卡</td><td>技嘉 RTX 5080 魔鹰 16G</td><td>¥12929.01</td></tr>
+      <tr><td>内存</td><td>金士顿 DDR5（待确认规格）</td><td>¥1680.00</td></tr>
+      <tr><td>固态硬盘</td><td>宏碁掠夺者 GM7 1TB PCIe 4.0</td><td>¥1199.00</td></tr>
+      <tr><td>电源+机箱</td><td>电源、机箱（一套两件）</td><td>¥1038.00</td></tr>
+      <tr><td>散热器</td><td>创氪星系 TRYX HOLO 360 ARGB 水冷</td><td>¥999.00</td></tr>
+      <tr><td>显示器</td><td>AOC 27" 2K 原生 180Hz IPS HDR400 1ms 10bit</td><td>—</td></tr>
+    </table>
+    <div class="callout amber"><b>一句话结论</b>这套配置玩绝地求生全品质不可能卡——2K/4K 全极致稳 144fps+。本工具把优化拆成可勾选的清单，做完白捡 10-20% 性能。</div>
+    <div class="callout green"><b>执行顺序</b>BIOS（EXPO+PBO）→ 刷 BIOS 最新 → 关 VBS → 电源计划 → 驱动三件套 → NVIDIA 面板 → 显示器 OSD。全部做完 PUBG 2K 三极致稳 250fps+。</div>
+  </div>
+
+  <!-- BIOS -->
+  <div class="card" id="tab-bios">
+    <h2>BIOS 设置（收益最大，先做）</h2>
+
+    <h3>任务清单</h3>
+    <div class="task" data-key="bios-expo">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">开启内存 EXPO <span class="tag gain">白捡性能</span></div>
+        <div class="t-desc">开机狂按 Del 进 BIOS → OC → EXPO/A-XMP → 选 EXPO 配置文件 1 → F10 保存。验证：任务管理器内存显示 5600 MT/s（不是4800）。</div>
+      </div>
+    </div>
+    <div class="task" data-key="bios-pbo">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">开启 PBO <span class="tag gain">9800X3D 免费性能</span></div>
+        <div class="t-desc">OC 菜单里找 PBO（Precision Boost Overdrive）→ Enabled。温度余量大，随便开。</div>
+      </div>
+    </div>
+    <div class="task" data-key="bios-update">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">更新 BIOS 到最新 <span class="tag warn">X870E 必做</span></div>
+        <div class="t-desc">M-FLASH 流程：官网下载（MPG X870E CARBON WIFI）→ U盘 FAT32 根目录 → Del 进 BIOS → M-FLASH → 选文件刷写 → 更新后 F6 恢复默认。过程中绝对不能断电。</div>
+      </div>
+    </div>
+
+    <h3>BIOS 更新三种方法</h3>
+    <table>
+      <tr><th style="width:26%">方法</th><th>说明</th></tr>
+      <tr><td><b>A. M-FLASH</b>（最推荐）</td><td>U盘 FAT32 → 官网下载 BIOS 解压到根目录 → BIOS 内 M-FLASH → 选文件 → 等待完成 → F6 恢复默认</td></tr>
+      <tr><td><b>B. MSI Center 在线</b>（最简单）</td><td>MSI Center → 技术支持 → 在线更新 → 高级更新 → BIOS → 更新。黑屏几次正常，等自动完成</td></tr>
+      <tr><td><b>C. 无U刷新</b>（救砖）</td><td>IO 挡板 Flash BIOS Button，无需 CPU/内存，日常用不到</td></tr>
+    </table>
+    <p><b>视频教程：</b>B站搜"微星 BIOS 更新 M-FLASH"（微星官方频道）；YouTube 搜 "MSI MAG X870E TOMAHAWK WIFI BIOS Update"；抖音搜"微星x870e暗黑主板更新bios"。</p>
+    <div class="callout red"><b>警告</b>刷写过程中绝对不能断电；更新前可用 M-FLASH 备份当前版本。</div>
+  </div>
+
+  <!-- Win11 -->
+  <div class="card" id="tab-win11">
+    <h2>Windows 11 游戏优化清单</h2>
+
+    <h3>第一梯队：白捡大性能</h3>
+    <div class="task" data-key="win-vbs">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">关闭内存完整性（VBS） <span class="tag hot">最多 +15% FPS</span></div>
+        <div class="t-desc">Windows安全中心 → 设备安全性 → 内核隔离 → 关闭"内存完整性"。CPU 密集型游戏收益最大（PUBG 正是）。</div>
+      </div>
+    </div>
+    <div class="task" data-key="win-power">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">电源计划：卓越性能 <span class="tag gain">+5-10%</span></div>
+        <div class="t-desc">管理员 PowerShell 运行 <code>powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61</code>，然后控制面板 → 电源选项 → 选"卓越性能"。</div>
+      </div>
+    </div>
+    <div class="task" data-key="win-gamebar">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">游戏模式 + HAGS <span class="tag gain">+1-5% +低延迟</span></div>
+        <div class="t-desc">设置→游戏→游戏模式开；设置→系统→屏幕→图形→硬件加速GPU计划开（DLSS 帧生成必需）。</div>
+      </div>
+    </div>
+
+    <h3>第二梯队：设置微调</h3>
+    <div class="task" data-key="win-nvidia">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">NVIDIA 控制面板优化</div>
+        <div class="t-desc">电源管理模式=最高性能优先；着色器缓存=10GB；低延迟模式=开（别选超高）；纹理过滤-质量=性能。</div>
+      </div>
+    </div>
+    <div class="task" data-key="win-gamebar2">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">关闭 Xbox Game Bar 录制</div>
+        <div class="t-desc">不录屏就关，省 1-3% CPU。设置→游戏→Game Bar。</div>
+      </div>
+    </div>
+    <div class="task" data-key="win-startup">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">关闭开机自启杂项</div>
+        <div class="t-desc">任务管理器→启动，只留杀毒+驱动控制台。</div>
+      </div>
+    </div>
+    <div class="task" data-key="win-directstorage">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">确认 DirectStorage</div>
+        <div class="t-desc">NVMe盘+Win11 已满足。Win+G → 设置 → 看 DirectStorage 是否启用。</div>
+      </div>
+    </div>
+
+    <h3>第三梯队：谨慎/了解即可</h3>
+    <div class="task" data-key="win-nagle">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">禁用 Nagle 算法 <span class="tag warn">仅 TCP 游戏有效</span></div>
+        <div class="t-desc">PUBG 用 UDP 无效，别折腾。只对魔兽/FF14 等 MMO 有意义。</div>
+      </div>
+    </div>
+    <div class="callout blue"><b>关键认知</b>这套配置瓶颈在 CPU 调度而非显卡——VBS 关闭 + 电源计划收益最大。Auto Super Resolution 仅骁龙 Copilot+ PC 可用，AMD 平台用 DLSS 3 帧生成代替。</div>
+  </div>
+
+  <!-- 显示器 -->
+  <div class="card" id="tab-display">
+    <h2>显示器设置（解决画面发白）</h2>
+    <div class="task" data-key="disp-hdr">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">关闭 Windows HDR <span class="tag hot">90% 概率是它</span></div>
+        <div class="t-desc">设置→系统→屏幕→"使用 HDR"关掉。HDR400 属入门级，Windows 开 HDR 后 SDR 内容整体发白泛灰是通病。</div>
+      </div>
+    </div>
+    <div class="task" data-key="disp-range">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">输出动态范围选"完整"</div>
+        <div class="t-desc">NVIDIA 控制面板→显示→更改分辨率→输出动态范围选"完整"（0-255）。"有限"（16-235）会让画面发灰发白。</div>
+      </div>
+    </div>
+    <div class="task" data-key="disp-10bit">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">确认 10bit 满血</div>
+        <div class="t-desc">NVIDIA 控制面板→输出颜色深度确认 10 bpc、RGB。只能 8bit 多半是线材问题——必须用 DP1.4 线（显示器自带）。</div>
+      </div>
+    </div>
+    <div class="task" data-key="disp-osd">
+      <input type="checkbox">
+      <div>
+        <div class="t-title">显示器 OSD 微调</div>
+        <div class="t-desc">亮度 70-80、对比度 50-60、伽马 2.2；关闭"动态对比度/OD加速"。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具 -->
+  <div class="card" id="tab-tools">
+    <h2>常用工具导航</h2>
+    <h3>驱动与 BIOS</h3>
+    <div class="tool-grid">
+      <a class="tool" href="https://www.nvidia.cn/drivers/" target="_blank">
+        <div class="tool-cat">驱动</div><div class="tool-name">NVIDIA 驱动下载</div>
+        <div class="tool-desc">RTX 5080 Game Ready 驱动官方下载</div>
+      </a>
+      <a class="tool" href="https://www.msi.cn/" target="_blank">
+        <div class="tool-cat">驱动/BIOS</div><div class="tool-name">微星官网</div>
+        <div class="tool-desc">MPG X870E 暗黑 BIOS/芯片组/网卡驱动</div>
+      </a>
+      <a class="tool" href="https://www.amd.com/zh-cn/support" target="_blank">
+        <div class="tool-cat">驱动</div><div class="tool-name">AMD 芯片组驱动</div>
+        <div class="tool-desc">X870E 芯片组驱动（比主板厂商版本新）</div>
+      </a>
+      <a class="tool" href="https://www.kingston.com/cn/" target="_blank">
+        <div class="tool-cat">厂商</div><div class="tool-name">金士顿官网</div>
+        <div class="tool-desc">内存条支持/验证/超频配置</div>
+      </a>
+    </div>
+    <h3>硬件检测与跑分</h3>
+    <div class="tool-grid">
+      <a class="tool" href="https://www.cpuid.com/softwares/cpu-z.html" target="_blank">
+        <div class="tool-cat">检测</div><div class="tool-name">CPU-Z</div>
+        <div class="tool-desc">CPU/主板/内存频率检测，验证 EXPO 生效</div>
+      </a>
+      <a class="tool" href="https://www.techpowerup.com/gpuz/" target="_blank">
+        <div class="tool-cat">检测</div><div class="tool-name">GPU-Z</div>
+        <div class="tool-desc">显卡状态/温度/功耗监控</div>
+      </a>
+      <a class="tool" href="https://www.crystalmark.info/en/software/crystaldiskmark/" target="_blank">
+        <div class="tool-cat">跑分</div><div class="tool-name">CrystalDiskMark</div>
+        <div class="tool-desc">GM7 固态读写速度验证</div>
+      </a>
+      <a class="tool" href="https://www.aida64.com/" target="_blank">
+        <div class="tool-cat">检测</div><div class="tool-name">AIDA64</div>
+        <div class="tool-desc">内存延迟测试/系统稳定性</div>
+      </a>
+      <a class="tool" href="https://www.guru3d.com/download/msi-afterburner/" target="_blank">
+        <div class="tool-cat">监控</div><div class="tool-name">MSI Afterburner</div>
+        <div class="tool-desc">游戏内帧数/温度/占用监控</div>
+      </a>
+    </div>
+    <h3>游戏平台与工具</h3>
+    <div class="tool-grid">
+      <a class="tool" href="https://store.steampowered.com/?l=schinese" target="_blank">
+        <div class="tool-cat">平台</div><div class="tool-name">Steam</div>
+        <div class="tool-desc">PUBG 等游戏平台</div>
+      </a>
+      <a class="tool" href="https://www.epicgames.com/site/zh-CN/home" target="_blank">
+        <div class="tool-cat">平台</div><div class="tool-name">Epic Games</div>
+        <div class="tool-desc">每周免费游戏</div>
+      </a>
+      <a class="tool" href="https://www.geforce.com/drivers" target="_blank">
+        <div class="tool-cat">工具</div><div class="tool-name">GeForce Experience</div>
+        <div class="tool-desc">驱动自动更新/游戏优化</div>
+      </a>
+    </div>
+    <h3>装机与系统</h3>
+    <div class="tool-grid">
+      <a class="tool" href="https://www.ventoy.net/cn/" target="_blank">
+        <div class="tool-cat">装机</div><div class="tool-name">Ventoy</div>
+        <div class="tool-desc">U盘启动盘制作，多系统镜像免格盘</div>
+      </a>
+      <a class="tool" href="https://www.microtool.de/en/download-center/" target="_blank">
+        <div class="tool-cat">系统</div><div class="tool-name">Media Creation Tool</div>
+        <div class="tool-desc">Windows 11 官方镜像下载</div>
+      </a>
+      <a class="tool" href="https://www.7-zip.org/" target="_blank">
+        <div class="tool-cat">工具</div><div class="tool-name">7-Zip</div>
+        <div class="tool-desc">开源压缩工具</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 备忘录 -->
+  <div class="card" id="tab-memo">
+    <h2>备忘录</h2>
+    <div class="callout amber"><b>待确认</b>① 内存完整规格（是否 16G×2 双通道、EXPO 频率）——单条 16G 强烈建议补一根组双通道，对 PUBG 1% Low 帧影响比频率大；② 电源功率是否 750W+（带 5080 建议 850W）。</div>
+    <div class="callout blue"><b>行情参考</b>DDR5 涨价周期（颗粒同比+480%）：金士顿野兽 DDR5 5600 16G 单条经销商价 ¥1329，官方 ¥1899，京东缺货。盯价工具每日 10:00 自动监控，降价通知。</div>
+    <p>本页勾选进度自动保存在浏览器（localStorage），重开网页不会丢。</p>
+    <button class="reset-btn" onclick="resetAll()">重置全部勾选</button>
+  </div>
+
+  <div class="footer">
+    Hermes 装机优化工具 · 生成于 2026-08-16 · 事实与研判分离 · BIOS 操作前请核对微星官网最新版本
+  </div>
+</div>
+
+<script>
+// 标签页切换
+const tabs = document.querySelectorAll('nav.tabs button');
+tabs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// 任务勾选 + localStorage 持久化
+const TASKS = document.querySelectorAll('.task[data-key]');
+function loadState() {
+  const saved = JSON.parse(localStorage.getItem('pc-setup-done') || '{}');
+  TASKS.forEach(t => {
+    const key = t.dataset.key;
+    const cb = t.querySelector('input[type=checkbox]');
+    if (saved[key]) { cb.checked = true; t.classList.add('done'); }
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const done = document.querySelectorAll('.task[data-key] input:checked').length;
+  const total = TASKS.length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = done + '/' + total + ' · ' + pct + '%';
+}
+TASKS.forEach(t => {
+  const cb = t.querySelector('input[type=checkbox]');
+  cb.addEventListener('change', () => {
+    const key = t.dataset.key;
+    const saved = JSON.parse(localStorage.getItem('pc-setup-done') || '{}');
+    if (cb.checked) { saved[key] = true; t.classList.add('done'); }
+    else { delete saved[key]; t.classList.remove('done'); }
+    localStorage.setItem('pc-setup-done', JSON.stringify(saved));
+    updateProgress();
+  });
+  // 整行点击也切换
+  t.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'A') { cb.click(); }
+  });
+});
+function resetAll() {
+  if (confirm('确定重置全部勾选进度？')) {
+    localStorage.removeItem('pc-setup-done');
+    TASKS.forEach(t => {
+      t.querySelector('input').checked = false;
+      t.classList.remove('done');
+    });
+    updateProgress();
+  }
+}
+loadState();
+</script>
+</body>
+</html>
