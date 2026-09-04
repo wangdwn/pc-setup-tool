@@ -477,5 +477,354 @@ function resetAll() {
 }
 loadState();
 </script>
+
+<style>
+.aimee-fab{position:fixed;right:18px;bottom:18px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#0b5fa5,#083b6e);color:#fff;border:none;box-shadow:0 4px 16px rgba(11,95,165,.4);font-size:24px;cursor:pointer;z-index:9999;display:flex;align-items:center;justify-content:center;transition:transform .2s}
+.aimee-fab:hover{transform:scale(1.08)}
+.aimee-fab .dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#4ade80;border-radius:50%;display:none;box-shadow:0 0 0 2px #fff}
+.aimee-fab .dot.show{display:block;animation:aimeePulse 1.6s infinite}
+@keyframes aimeePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.aimee-panel{position:fixed;right:18px;bottom:84px;width:380px;max-width:calc(100vw - 24px);height:560px;max-height:calc(100vh - 110px);background:#fff;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.22);display:none;flex-direction:column;z-index:9998;overflow:hidden;border:1px solid var(--line);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+.aimee-panel.show{display:flex;animation:aimeeSlide .25s ease-out}
+@keyframes aimeeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.aimee-head{background:linear-gradient(135deg,#0b5fa5,#083b6e);color:#fff;padding:11px 12px;display:flex;align-items:center;gap:9px;flex-shrink:0}
+.aimee-head .av{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.aimee-head .info{flex:1;line-height:1.25;min-width:0}
+.aimee-head .name{font-weight:700;font-size:14px}
+.aimee-head .model{font-size:10.5px;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aimee-head .btns{display:flex;gap:4px;flex-shrink:0}
+.aimee-head .btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0}
+.aimee-head .btn:hover{background:rgba(255,255,255,.28)}
+.aimee-msgs{flex:1;overflow-y:auto;padding:12px;background:#f5f7fa;display:flex;flex-direction:column;gap:9px;scrollbar-width:thin}
+.aimee-msgs::-webkit-scrollbar{width:4px}
+.aimee-msgs::-webkit-scrollbar-thumb{background:#c8d0db;border-radius:2px}
+.aimee-msg{max-width:86%;padding:8px 11px;border-radius:10px;font-size:13px;line-height:1.55;word-wrap:break-word;white-space:pre-wrap;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.aimee-msg.user{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:3px}
+.aimee-msg.bot{align-self:flex-start;background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:3px}
+.aimee-msg.error{background:var(--red-soft);color:var(--red);border:1px solid var(--red);align-self:flex-start;font-size:12px}
+.aimee-msg .typing{display:inline-flex;gap:3px;padding:3px 0}
+.aimee-msg .typing span{width:5px;height:5px;border-radius:50%;background:var(--gray);animation:aimeeBlink 1.2s infinite}
+.aimee-msg .typing span:nth-child(2){animation-delay:.2s}
+.aimee-msg .typing span:nth-child(3){animation-delay:.4s}
+@keyframes aimeeBlink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.aimee-input{padding:8px 10px;border-top:1px solid var(--line);background:#fff;display:flex;gap:6px;align-items:flex-end;flex-shrink:0}
+.aimee-input textarea{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:13px;resize:none;font-family:inherit;min-height:36px;max-height:120px;outline:none;line-height:1.4;color:var(--ink)}
+.aimee-input textarea:focus{border-color:var(--blue)}
+.aimee-input button{background:var(--blue);color:#fff;border:none;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.aimee-input button:disabled{background:var(--gray);cursor:not-allowed;opacity:.5}
+.aimee-input button:hover:not(:disabled){background:#083b6e}
+.aimee-settings{position:absolute;inset:0;background:#fff;display:none;flex-direction:column;z-index:10}
+.aimee-settings.show{display:flex;animation:aimeeSlide .2s ease-out}
+.aimee-settings .set-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.aimee-settings .set-head strong{font-size:14px}
+.aimee-settings .set-body{flex:1;overflow-y:auto;padding:14px}
+.aimee-settings .field{margin-bottom:14px}
+.aimee-settings label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.aimee-settings input,.aimee-settings select{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-family:inherit;color:var(--ink);background:#fff}
+.aimee-settings input:focus,.aimee-settings select:focus{outline:none;border-color:var(--blue)}
+.aimee-settings .hint{font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5}
+.aimee-settings .hint a{color:var(--blue)}
+.aimee-settings .actions{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0}
+.aimee-settings .actions button{flex:1;padding:8px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600}
+.aimee-settings .actions .primary{background:var(--blue);color:#fff}
+.aimee-settings .actions .danger{background:var(--red-soft);color:var(--red)}
+.aimee-empty{text-align:center;color:var(--gray);font-size:12.5px;padding:20px 14px;line-height:1.7;background:#fff;border-radius:10px;border:1px dashed var(--line)}
+.aimee-empty b{color:var(--ink)}
+.aimee-empty .quick{display:inline-block;margin:4px 3px 0;padding:5px 9px;background:#fff;border:1px solid var(--line);border-radius:14px;cursor:pointer;font-size:12px;color:var(--ink);transition:all .15s}
+.aimee-empty .quick:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+.aimee-empty .quick:active{transform:scale(.97)}
+.aimee-empty .tip{margin-top:12px;font-size:11px;color:var(--amber);background:var(--amber-soft);padding:6px 10px;border-radius:6px;display:inline-block}
+@media(max-width:480px){
+  .aimee-panel{right:8px;bottom:74px;width:calc(100vw - 16px);height:calc(100vh - 90px);border-radius:12px}
+  .aimee-fab{right:12px;bottom:12px;width:50px;height:50px;font-size:22px}
+  .aimee-msg{font-size:12.5px}
+}
+</style>
+
+<button class="aimee-fab" id="aimeeFab" title="艾米丽 · AI 装机助手">💬<span class="dot" id="aimeeDot"></span></button>
+<div class="aimee-panel" id="aimeePanel">
+  <div class="aimee-head">
+    <div class="av">🤖</div>
+    <div class="info">
+      <div class="name">艾米丽</div>
+      <div class="model" id="aimeeModelLabel">DeepSeek V4 Pro · NVIDIA</div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="aimeeSettingsBtn" title="设置">⚙</button>
+      <button class="btn" id="aimeeClearBtn" title="清空对话">🗑</button>
+      <button class="btn" id="aimeeCloseBtn" title="关闭">✕</button>
+    </div>
+  </div>
+  <div class="aimee-msgs" id="aimeeMsgs"></div>
+  <div class="aimee-input">
+    <textarea id="aimeeInput" placeholder="问艾米丽装机问题… (Enter 发送 / Shift+Enter 换行)" rows="1"></textarea>
+    <button id="aimeeSendBtn" title="发送">↑</button>
+  </div>
+  <div class="aimee-settings" id="aimeeSettings">
+    <div class="set-head">
+      <button class="btn" id="aimeeSettingsBack" style="background:var(--line);color:var(--ink);width:28px;height:28px">←</button>
+      <strong>艾米丽 · 设置</strong>
+    </div>
+    <div class="set-body">
+      <div class="field">
+        <label>NVIDIA API Key <span style="color:var(--red)">*</span></label>
+        <input type="password" id="aimeeKey" placeholder="nvapi-..." autocomplete="off">
+        <div class="hint">仅存浏览器本地，不上传。获取：<a href="https://build.nvidia.com/" target="_blank">build.nvidia.com → API Keys</a>。被泄露请立即 <a href="https://build.nvidia.com/" target="_blank">revoke</a> 换新。</div>
+      </div>
+      <div class="field">
+        <label>模型</label>
+        <select id="aimeeModel">
+          <option value="deepseek-ai/deepseek-v4-pro-0813">DeepSeek V4 Pro (推荐)</option>
+          <option value="deepseek-ai/deepseek-v3.1-terminus">DeepSeek V3.1 Terminus</option>
+          <option value="meta/llama-3.1-70b-instruct">Llama 3.1 70B Instruct</option>
+          <option value="mistralai/mistral-large-2-instruct">Mistral Large 2</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>温度 <span style="color:var(--gray);font-weight:400">(0=严谨 1=发散)</span></label>
+        <input type="number" id="aimeeTemp" min="0" max="2" step="0.1" value="0.6">
+      </div>
+      <div class="field">
+        <label>最大回复 tokens</label>
+        <input type="number" id="aimeeMax" min="256" max="16384" step="256" value="2048">
+      </div>
+      <div class="field">
+        <label>系统提示词 <span style="color:var(--gray);font-weight:400">(可改)</span></label>
+        <textarea id="aimeeSys" rows="6" style="width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-family:inherit;line-height:1.5;resize:vertical;outline:none"></textarea>
+        <div class="hint">告诉艾米丽她的身份和回答风格。留空用默认。</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="aimeeSaveBtn">保存</button>
+      <button class="danger" id="aimeeClearAllBtn">清空全部</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const K_KEY = 'aimee_api_key';
+  const K_MODEL = 'aimee_model';
+  const K_TEMP = 'aimee_temp';
+  const K_MAX = 'aimee_max';
+  const K_HIST = 'aimee_hist';
+  const K_SYS = 'aimee_sys';
+  const DEFAULT_SYS = `你是艾米丽（Emily），一名专业的 PC 装机优化助手，专门帮用户优化 Windows 游戏电脑。本页面的主机是 9800X3D + RTX 5080 + 微星 X870E 暗黑 WIFI。
+
+你熟悉的领域：
+- 微星 X870E 系列主板 BIOS（EXPO 内存超频、PBO 加速、M-FLASH 升级三种方法）
+- AMD 9800X3D 调优（PBO 温度墙、内存频率对 1% Low 帧的影响）
+- NVIDIA RTX 5080 驱动与控制面板（电源管理模式=最高性能、纹理过滤、NVC 优化项）
+- Windows 11 游戏优化（关 VBS +15% FPS、卓越性能电源计划、HAGS、Nagle 算法仅 TCP 有效）
+- 显示器调校（关闭 Windows HDR、输出动态范围=完整 0-255、10bit 色深、OSD 设置）
+- 常见游戏性能问题排查（PUBG、CS2、永劫无间等）
+
+回答要求：
+1. 简洁实用，给出可执行步骤和具体命令
+2. 必要时提供预期收益（如 "+15% FPS"、"白捡 5-10%"）
+3. 警告潜在风险（如刷 BIOS 不能断电、关 VBS 会降低系统安全性）
+4. 用中文回答，可用 markdown 列表 / 代码块
+5. 不确定的具体型号/参数让用户查官方资料，别瞎编
+6. 回答末尾可给一条相关延伸建议`;
+
+  const $ = id => document.getElementById(id);
+  const fab = $('aimeeFab'), panel = $('aimeePanel'), msgs = $('aimeeMsgs'),
+        input = $('aimeeInput'), sendBtn = $('aimeeSendBtn'),
+        settingsBtn = $('aimeeSettingsBtn'), settingsPanel = $('aimeeSettings'),
+        keyInput = $('aimeeKey'), modelSelect = $('aimeeModel'),
+        tempInput = $('aimeeTemp'), maxInput = $('aimeeMax'),
+        sysInput = $('aimeeSys'),
+        saveBtn = $('aimeeSaveBtn'), backBtn = $('aimeeSettingsBack'),
+        clearBtn = $('aimeeClearBtn'), clearAllBtn = $('aimeeClearAllBtn'),
+        closeBtn = $('aimeeCloseBtn'), dot = $('aimeeDot'),
+        modelLabel = $('aimeeModelLabel');
+
+  function getConfig() {
+    return {
+      key: localStorage.getItem(K_KEY) || '',
+      model: localStorage.getItem(K_MODEL) || 'deepseek-ai/deepseek-v4-pro-0813',
+      temp: parseFloat(localStorage.getItem(K_TEMP) || '0.6'),
+      max: parseInt(localStorage.getItem(K_MAX) || '2048'),
+      sys: localStorage.getItem(K_SYS) || DEFAULT_SYS,
+    };
+  }
+  function setConfig(c) {
+    if (c.key !== undefined) c.key ? localStorage.setItem(K_KEY, c.key) : localStorage.removeItem(K_KEY);
+    if (c.model !== undefined) localStorage.setItem(K_MODEL, c.model);
+    if (c.temp !== undefined) localStorage.setItem(K_TEMP, c.temp);
+    if (c.max !== undefined) localStorage.setItem(K_MAX, c.max);
+    if (c.sys !== undefined) c.sys ? localStorage.setItem(K_SYS, c.sys) : localStorage.removeItem(K_SYS);
+    updateModelLabel();
+  }
+  function updateModelLabel() {
+    const c = getConfig();
+    const m = c.model;
+    const short = m.includes('v4-pro') ? 'V4 Pro' :
+                  m.includes('v3.1') ? 'V3.1' :
+                  m.includes('llama') ? 'Llama 3.1' :
+                  m.includes('mistral') ? 'Mistral Large 2' : m.split('/').pop();
+    modelLabel.textContent = `DeepSeek ${short} · NVIDIA`;
+  }
+  function getHist() {
+    try { return JSON.parse(localStorage.getItem(K_HIST) || '[]'); } catch(e) { return []; }
+  }
+  function setHist(h) {
+    try { localStorage.setItem(K_HIST, JSON.stringify(h)); } catch(e) {}
+  }
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function mdLite(s) {
+    // 极简 markdown：代码块 + 行内代码 + 加粗
+    s = escHtml(s);
+    s = s.replace(/```([\s\S]*?)```/g, '<pre style="background:#0d1b2e;color:#e0e6ed;padding:8px 10px;border-radius:6px;overflow-x:auto;font-size:12px;margin:6px 0;line-height:1.5">$1</pre>');
+    s = s.replace(/`([^`]+)`/g, '<code style="background:#eef2f7;padding:1px 5px;border-radius:3px;font-size:12px;color:#1a2332">$1</code>');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+    s = s.replace(/^[-•] /gm, '• ');
+    return s;
+  }
+  function renderMsg(role, text, isMd) {
+    const d = document.createElement('div');
+    d.className = 'aimee-msg ' + (role === 'user' ? 'user' : role === 'error' ? 'error' : 'bot');
+    d[isMd ? 'innerHTML' : 'textContent'] = text;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+    return d;
+  }
+  function renderEmpty() {
+    msgs.innerHTML = '<div class="aimee-empty">你好，我是 <b>艾米丽</b>，AI 装机优化助手 🛠️<br>试试问：' +
+      ['EXPO 怎么开？','关 VBS 真能涨 15%？','HDR400 画面发白怎么办？','9800X3D PBO 安全吗？','RTX 5080 驱动推荐哪个？']
+        .map(q => '<span class="quick" data-q="' + q + '">' + q + '</span>').join('') +
+      '<div class="tip">💡 首次使用请点右上角 ⚙ 配置 API Key</div></div>';
+    msgs.querySelectorAll('.quick').forEach(s => {
+      s.addEventListener('click', () => { input.value = s.dataset.q; input.focus(); autoResize(); });
+    });
+  }
+  function renderHistory() {
+    msgs.innerHTML = '';
+    const h = getHist();
+    if (!h.length) { renderEmpty(); return; }
+    h.forEach(m => renderMsg(m.role, m.content, m.role === 'assistant'));
+  }
+  function autoResize() {
+    input.style.height = 'auto';
+    input.style.height = Math.min(120, input.scrollHeight) + 'px';
+  }
+  input.addEventListener('input', autoResize);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); }
+  });
+
+  function openPanel() {
+    panel.classList.add('show');
+    fab.style.display = 'none';
+    dot.classList.remove('show');
+    renderHistory();
+    if (!getConfig().key) setTimeout(openSettings, 200);
+    else setTimeout(() => input.focus(), 100);
+  }
+  function closePanel() {
+    panel.classList.remove('show');
+    fab.style.display = 'flex';
+  }
+  fab.addEventListener('click', openPanel);
+  closeBtn.addEventListener('click', closePanel);
+
+  function openSettings() {
+    settingsPanel.classList.add('show');
+    const c = getConfig();
+    keyInput.value = c.key; modelSelect.value = c.model; tempInput.value = c.temp; maxInput.value = c.max; sysInput.value = c.sys;
+  }
+  function closeSettings() { settingsPanel.classList.remove('show'); }
+  settingsBtn.addEventListener('click', openSettings);
+  backBtn.addEventListener('click', closeSettings);
+  saveBtn.addEventListener('click', () => {
+    setConfig({
+      key: keyInput.value.trim(),
+      model: modelSelect.value,
+      temp: parseFloat(tempInput.value) || 0.6,
+      max: parseInt(maxInput.value) || 2048,
+      sys: sysInput.value.trim() || DEFAULT_SYS,
+    });
+    closeSettings();
+    if (!getConfig().key) { alert('已保存。⚠️ 但 API Key 为空，请填入后再发问。'); openSettings(); }
+    else input.focus();
+  });
+  clearBtn.addEventListener('click', () => {
+    if (confirm('清空当前对话？保留设置。')) { setHist([]); renderEmpty(); }
+  });
+  clearAllBtn.addEventListener('click', () => {
+    if (confirm('清空全部记录和设置？此操作不可恢复。')) {
+      [K_KEY,K_MODEL,K_TEMP,K_MAX,K_HIST,K_SYS].forEach(k => localStorage.removeItem(k));
+      closeSettings();
+      renderEmpty();
+      updateModelLabel();
+    }
+  });
+
+  let sending = false;
+  async function send() {
+    if (sending) return;
+    const text = input.value.trim();
+    if (!text) return;
+    const cfg = getConfig();
+    if (!cfg.key) { openSettings(); alert('请先配置 API Key'); return; }
+    sending = true;
+    sendBtn.disabled = true;
+    input.value = '';
+    autoResize();
+    renderMsg('user', text, false);
+    const typing = document.createElement('div');
+    typing.className = 'aimee-msg bot';
+    typing.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+    const hist = getHist();
+    hist.push({ role: 'user', content: text });
+    const messages = [{ role: 'system', content: cfg.sys }, ...hist];
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 90000);
+      const r = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + cfg.key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: cfg.model,
+          messages,
+          temperature: cfg.temp,
+          top_p: 0.95,
+          max_tokens: cfg.max,
+          stream: false,
+        }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(t);
+      if (!r.ok) {
+        let err = '';
+        try { err = (await r.json()).detail || (await r.text()); } catch(_) { err = await r.text(); }
+        throw new Error('HTTP ' + r.status + ' · ' + (typeof err === 'string' ? err : JSON.stringify(err)).slice(0, 300));
+      }
+      const data = await r.json();
+      const reply = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '（无回复）';
+      typing.remove();
+      renderMsg('bot', mdLite(reply), true);
+      hist.push({ role: 'assistant', content: reply });
+      setHist(hist.slice(-20));
+    } catch(e) {
+      typing.remove();
+      let msg = e.name === 'AbortError' ? '⏱ 请求超时（>90秒），可调大 max_tokens 或换更小的模型' : e.message;
+      renderMsg('error', '❌ 调用失败：' + msg);
+    } finally {
+      sending = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+  sendBtn.addEventListener('click', send);
+
+  updateModelLabel();
+  setTimeout(() => { if (!panel.classList.contains('show')) dot.classList.add('show'); }, 2500);
+})();
+</script>
 </body>
 </html>
