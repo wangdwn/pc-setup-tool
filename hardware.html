@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>硬件配置清单 · 9800X3D + RTX 5080</title>
+<style>
+  :root {
+    --ink: #1a2332;
+    --blue: #0b5fa5;
+    --blue-soft: #e8f1fa;
+    --amber: #b7791f;
+    --amber-soft: #fdf3e3;
+    --green: #1a7f4b;
+    --green-soft: #e6f4ec;
+    --red: #b02a2a;
+    --red-soft: #fbeaea;
+    --gray: #5b6573;
+    --line: #e3e8ef;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif; color: var(--ink); background: #f5f7fa; line-height: 1.7; }
+  .topbar { background: linear-gradient(135deg, #0b5fa5, #083b6e); color: #fff; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .topbar .brand { font-weight: 700; font-size: 16px; }
+  .topbar .brand small { opacity: .7; font-weight: 400; margin-left: 8px; font-size: 12px; }
+  .topbar a { color: #fff; opacity: .9; font-size: 13px; text-decoration: none; border: 1px solid rgba(255,255,255,.4); padding: 5px 12px; border-radius: 999px; }
+  .topbar a:hover { background: rgba(255,255,255,.15); }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 20px 14px 60px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 10px rgba(20,40,80,.07); padding: 22px 24px; margin-bottom: 16px; }
+  h2 { font-size: 18px; margin-bottom: 14px; padding-left: 10px; border-left: 4px solid var(--blue); }
+  h3 { font-size: 15px; margin: 16px 0 8px; }
+  p { font-size: 14px; margin-bottom: 10px; color: #2c3747; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0 14px; }
+  th { background: var(--blue-soft); color: var(--blue); text-align: left; font-weight: 600; padding: 8px 10px; border: 1px solid var(--line); width: 30%; white-space: nowrap; vertical-align: top; }
+  td { padding: 8px 10px; border: 1px solid var(--line); vertical-align: top; color: #2c3747; }
+  tr:nth-child(even) td { background: #fafbfd; }
+  .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin: 2px 4px 2px 0; background: var(--blue-soft); color: var(--blue); }
+  .tag.ok { background: var(--green-soft); color: var(--green); }
+  .tag.warn { background: var(--amber-soft); color: var(--amber); }
+  .callout { border-radius: 8px; padding: 12px 16px; font-size: 14px; margin: 12px 0; }
+  .callout.blue { background: var(--blue-soft); border-left: 4px solid var(--blue); }
+  .callout.green { background: var(--green-soft); border-left: 4px solid var(--green); }
+  .callout.amber { background: var(--amber-soft); border-left: 4px solid var(--amber); }
+  .callout.red { background: var(--red-soft); border-left: 4px solid var(--red); }
+  .callout b { display: block; margin-bottom: 4px; }
+  code { background: #eef2f7; padding: 1px 6px; border-radius: 4px; font-size: 13px; font-family: "SF Mono", Consolas, monospace; }
+  .footer { text-align: center; font-size: 12px; color: var(--gray); padding: 20px 0 30px; }
+  @media (max-width: 600px) { .card { padding: 16px; } table { font-size: 12px; } th, td { padding: 6px 8px; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">🖥️ 硬件配置清单<small>9800X3D + RTX 5080 实测</small></div>
+  <a href="index.html">← 返回装机优化工具</a>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <h2>核心配件</h2>
+    <table>
+      <tr><th>CPU</th><td>AMD Ryzen 7 9800X3D（8 核 / 16 线程，AM5，加速 4.7GHz，3D V-Cache）</td></tr>
+      <tr><th>主板</th><td>微星 MPG X870E CARBON WIFI（MS-7E49）</td></tr>
+      <tr><th>BIOS</th><td>American Megatrends 1.AA0（2026-06-01）</td></tr>
+      <tr><th>内存</th><td>32 GB（2×16GB Kingston KF556C40-16 DDR5，<b>当前 4800 MT/s</b>，标称 5600，EXPO 未开）</td></tr>
+      <tr><th>显卡</th><td>
+        <span class="tag ok">NVIDIA GeForce RTX 5080</span>
+        <span class="tag">AMD Radeon 核显 (512MB)</span>
+        <span class="tag warn">GameViewer 虚拟显示适配器（已停用）</span>
+      </td></tr>
+    </table>
+    <div class="callout amber"><b>两点已处理</b>① 内存标称 DDR5-5600，当前跑 4800（JEDEC 默认，EXPO 未开）——进 BIOS 一键开 EXPO 即可跑满，详见首页"BIOS 设置"。② <b>GameViewer 虚拟显示适配器</b>此前状态 Error，是导致"呼吸式黑屏"的元凶；已于 2026-10-27 停用其后台服务并禁用，黑屏已消除。</div>
+  </div>
+
+  <div class="card">
+    <h2>处理器 / 主板详情</h2>
+    <table>
+      <tr><th>制造商</th><td>AuthenticAMD</td></tr>
+      <tr><th>插槽</th><td>AM5</td></tr>
+      <tr><th>物理核心 / 线程</th><td>8 / 16</td></tr>
+      <tr><th>最大加速频率</th><td>4700 MHz</td></tr>
+      <tr><th>系统类型</th><td>x64-based PC</td></tr>
+      <tr><th>主板厂商 / 型号</th><td>Micro-Star International (MSI) / MPG X870E CARBON WIFI</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>内存</h2>
+    <table>
+      <tr><th>插槽 DIMMA2</th><td>16 GB · Kingston KF556C40-16 · DDR5-4800</td></tr>
+      <tr><th>插槽 DIMMB2</th><td>16 GB · Kingston KF556C40-16 · DDR5-4800</td></tr>
+      <tr><th>总容量</th><td>32 GB（双通道，系统识别 31 GB 可用）</td></tr>
+    </table>
+    <div class="callout green"><b>建议</b>已组双通道，无需再加内存。当前瓶颈只是频率——开 EXPO 后从 4800 提到 5600，白捡约 17% 内存带宽，对 9800X3D 的网游 1% Low 帧有帮助。</div>
+  </div>
+
+  <div class="card">
+    <h2>显示</h2>
+    <table>
+      <tr><th>NVIDIA GeForce RTX 5080</th><td>独显 · 驱动 32.0.16.1692（2026-09-04）· 状态 OK</td></tr>
+      <tr><th>AMD Radeon(TM) Graphics</th><td>核显 · 512MB 共享 · 驱动 32.0.21045.9003（2026-08-27）· 状态 OK</td></tr>
+      <tr><th>GameViewer Virtual Display Adapter</th><td>虚拟显示适配器 · 驱动 15.6.5.199 · <b>已停用（黑屏元凶已拔除）</b></td></tr>
+      <tr><th>物理显示器</th><td>AOC Q27G2G3R4B（27" 2K，系统识别为唯一真实监视器）</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>存储（4 块盘）</h2>
+    <table>
+      <tr><th>Seagate ST1000DM010</th><td>932 GB · 机械硬盘 (HDD) · SATA</td></tr>
+      <tr><th>Predator SSD GM7</th><td>954 GB · SSD · SCSI（系统盘 C: 所在）</td></tr>
+      <tr><th>SK hynix PC711</th><td>477 GB · NVMe SSD · PCIe</td></tr>
+      <tr><th>Samsung 970 EVO Plus</th><td>932 GB · NVMe SSD · PCIe</td></tr>
+    </table>
+    <h3 style="margin-top:16px">分区现状</h3>
+    <table>
+      <tr><th>C:</th><td>459 GB 总量 / 101 GB 剩余 · NTFS（GM7 系统盘）</td></tr>
+      <tr><th>D:</th><td>931 GB 总量 / 363 GB 剩余 · NTFS</td></tr>
+      <tr><th>E:</th><td>931 GB 总量 / 293 GB 剩余 · NTFS</td></tr>
+      <tr><th>F:</th><td>953 GB 总量 / 613 GB 剩余 · NTFS</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>网络</h2>
+    <table>
+      <tr><th>Realtek Gaming 2.5GbE</th><td>有线网卡（接 192.168.1.x，可正常上网）</td></tr>
+      <tr><th>Realtek PCIe 5GbE</th><td>第二张有线网卡</td></tr>
+      <tr><th>Qualcomm FastConnect 7800</th><td>Wi-Fi 7 无线网卡（此前 5GHz 驱动断流，已锁 2.4G 缓解）</td></tr>
+      <tr><th>Bluetooth Device (PAN)</th><td>蓝牙个人局域网</td></tr>
+    </table>
+    <div class="callout blue"><b>网络排障记录</b>WiFi 此前"连上即断 / 一拔网线就断"——根因是路由器把 WiFi 分到无外网的 <code>192.168.3.x</code> 子网。详见首页"排障实测"标签：已锁 2.4G 缓解驱动断流，并建议将路由器设为 AP/桥接模式由光猫统一拨号。</div>
+  </div>
+
+  <div class="footer">本清单由 WorkBuddy 自动采集（WMI/CIM）· 数据实测自本机 · 单文件离线可看 · 2026-10-27 更新</div>
+</div>
+</body>
+</html>

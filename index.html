@@ -169,6 +169,7 @@
     <button data-tab="bios">BIOS 设置</button>
     <button data-tab="win11">Win11 优化</button>
     <button data-tab="display">显示器</button>
+    <button data-tab="trouble">排障实测</button>
     <button data-tab="tools">常用工具</button>
     <button data-tab="memo">备忘录</button>
   </nav>
@@ -180,7 +181,7 @@
       <tr><th style="width:22%">配件</th><th style="width:48%">型号</th><th>购入价</th></tr>
       <tr><td>CPU+主板套装</td><td>微星 MPG X870E 暗黑 WIFI + AMD R9-9800X3D</td><td>¥5282.10</td></tr>
       <tr><td>显卡</td><td>技嘉 RTX 5080 魔鹰 16G</td><td>¥12929.01</td></tr>
-      <tr><td>内存</td><td>金士顿 DDR5（待确认规格）</td><td>¥1680.00</td></tr>
+      <tr><td>内存</td><td>金士顿 DDR5-5600 16G×2 双通道（当前 4800，EXPO 未开）</td><td>¥1680.00</td></tr>
       <tr><td>固态硬盘</td><td>宏碁掠夺者 GM7 1TB PCIe 4.0</td><td>¥1199.00</td></tr>
       <tr><td>电源+机箱</td><td>电源、机箱（一套两件）</td><td>¥1038.00</td></tr>
       <tr><td>散热器</td><td>创氪星系 TRYX HOLO 360 ARGB 水冷</td><td>¥999.00</td></tr>
@@ -329,6 +330,42 @@
     </div>
   </div>
 
+  <!-- 排障实测 -->
+  <div class="card" id="tab-trouble">
+    <h2>排障实测（本机真实案例 · 2026-10-27）</h2>
+    <div class="callout blue"><b>说明</b>以下均为本机（9800X3D + RTX 5080 + 微星 X870E）真实故障的排查与修复记录，附可复现步骤，不是教程搬运。</div>
+
+    <h3>① WiFi：连上就断 / 一拔网线就断网</h3>
+    <div class="callout red"><b>根因（两层叠加）</b>网卡是 Qualcomm FastConnect 7800（Wi-Fi 7），在 5GHz/802.11ax 上连上后被<b>驱动主动断开</b>（WLAN 日志事件 8003）；更关键的是路由器 DAVID-HOME 把 WiFi 分到 <code>192.168.3.x</code> 子网，<b>该网段无外网出口</b>——拔掉有线后系统切到 WiFi，自然断网。</div>
+    <p><b>已做修复：</b></p>
+    <ul>
+      <li>网卡高级属性 <code>StaPreferredBand</code> 锁为 <code>2.4Ghz Band Preferred</code>，绕过 5G 驱动断流（实测从"连上 4 秒必断"变为稳定保持）；</li>
+      <li>关闭 WiFi 电源节能（SelectiveSuspend 等），消除随机断流；</li>
+      <li>路由器侧治本：将 DAVID-HOME 设为 AP/桥接模式，由光猫统一拨号、统一发 <code>192.168.1.x</code>，WiFi 与有线同网段即继承外网（彻底告别"关有线就断"）。</li>
+    </ul>
+
+    <h3>② 呼吸式黑屏（不定时黑一下又恢复）</h3>
+    <div class="callout red"><b>元凶</b>GameViewer（网易）的<b>虚拟显示适配器</b>。它开机自启、三个后台服务常驻，往系统注入一个虚拟显示器；物理只有 1 台 AOC，Windows 却认出 3 个"监视器"，幽灵屏反复加挂/卸载→桌面重排→主屏一黑一黑。与显卡驱动崩溃无关（全量 TDR 事件 4101 = 0）。</div>
+    <p><b>已做修复：</b>停掉 GameViewer 三个后台服务 + 清除开机自启，虚拟显示适配器已消失，黑屏消除。残留的 WUDF 驱动服务为休眠态（无 exe 不会复活）；如需彻底卸载，用下方"黑屏自证脚本"页内的命令清干净即可。</p>
+    <div class="callout amber"><b>自检</b>若黑屏仍在，用下方"黑屏自证脚本"记录显示拓扑变化，坐实是否"显示器在反复增减"。</div>
+
+    <h3>③ 内存没跑满（4800 而非 5600）</h3>
+    <div class="callout amber"><b>现象</b>金士顿 KF556C40-16（标称 DDR5-5600），实测只跑 4800（JEDEC 默认，EXPO 未开），白白少约 17% 内存带宽，对 9800X3D 的网游 1% Low 帧有影响。</div>
+    <p><b>修复（BIOS 一键，零风险）：</b>重启按 <code>Del</code> 进 BIOS → <code>F7</code> 高级 → <code>OC</code> → 找 <code>EXPO</code> → 选 <code>EXPO Profile 1</code> → <code>F10</code> 保存。进系统后任务管理器确认内存速度到 5600 MT/s。详见"BIOS 设置"标签的 EXPO 任务。</p>
+
+    <h3>配套资源</h3>
+    <div class="tool-grid">
+      <a class="tool" href="hardware.html">
+        <div class="tool-cat">报告</div><div class="tool-name">完整硬件清单</div>
+        <div class="tool-desc">本机 CPU/主板/内存/显卡/存储/网络实测明细</div>
+      </a>
+      <a class="tool" href="display_watchdog.ps1" download>
+        <div class="tool-cat">脚本</div><div class="tool-name">黑屏自证脚本</div>
+        <div class="tool-desc">后台记录显示拓扑变化，黑屏后查日志坐实元凶</div>
+      </a>
+    </div>
+  </div>
+
   <!-- 工具 -->
   <div class="card" id="tab-tools">
     <h2>常用工具导航</h2>
@@ -416,7 +453,7 @@
   </div>
 
   <div class="footer">
-    Hermes 装机优化工具 · 生成于 2026-08-16 · 事实与研判分离 · BIOS 操作前请核对微星官网最新版本
+    Hermes 装机优化工具 · 生成于 2026-08-16 · 排障实测更新于 2026-10-27 · 事实与研判分离 · BIOS 操作前请核对微星官网最新版本
   </div>
 </div>
 
